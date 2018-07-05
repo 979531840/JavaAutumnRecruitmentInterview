@@ -22,3 +22,67 @@
 | private| ✔ | ✘   |   ✘  |  ✘ |
 
 类的成员不写访问修饰时默认为default。默认对于同一个包中的其他类相当于公开（public），对于不是同一个包中的其他类相当于私有（private）。受保护（protected）对子类相当于公开，对不是同一包中的没有父子关系的类相当于私有。
+
+### String 是最基本的数据类型吗?
+
+不是。Java中的基本数据类型只有8个：byte、short、int、long、float、double、char、boolean；除了基本类型（primitive type）和枚举类型（enumeration type），剩下的都是引用类型（reference type）。
+
+### float f=3.4;是否正确?
+
+不正确。3.4是双精度数，将双精度型（double）赋值给浮点型（float）属于下转型（down-casting，也称为窄化）会造成精度损失，因此需要强制类型转换float f =(float)3.4; 或者写成float f =3.4F;。
+5、short s1 = 1; s1 = s1 + 1;有错吗?short s1 = 1; s1 += 1;有错吗?
+答：对于short s1 = 1; s1 = s1 + 1;由于1是int类型，因此s1+1运算结果也是int 型，需要强制转换类型才能赋值给short型。而short s1 = 1; s1 += 1;可以正确编译，因为s1+= 1;相当于s1 = (short)(s1 + 1);其中有隐含的强制类型转换。
+6、int 和Integer 有什么区别?
+1、Integer是int的包装类，int则是java的一种基本数据类型 
+2、Integer变量必须实例化后才能使用，而int变量不需要 
+3、Integer实际是对象的引用，当new一个Integer时，实际上是生成一个指针指向此对象；而int则是直接存储数据值 
+
+### Integer的默认值是null，int的默认值是0
+Java 为每个原始类型提供了包装类型：
+原始类型: boolean，char，byte，short，int，long，float，double
+包装类型：Boolean，Character，Byte，Short，Integer，Long，Float，Double
+
+``` javascript
+1.	public class TestInteger {  
+2.	    public static void main(String[] args) {  
+3.	        int i = 128;  
+4.	        Integer i2 = 128;  
+5.	        Integer i3 = new Integer(128);  
+6.	        System.out.println(i == i2); //Integer会自动拆箱为int，所以为true  
+7.	        System.out.println(i == i3); //true，理由同上  
+8.	        Integer i4 = 127;//编译时被翻译成：Integer i4 = Integer.valueOf(127);  
+9.	        Integer i5 = 127;  
+10.	        System.out.println(i4 == i5);//true  
+11.	        Integer i6 = 128;  
+12.	        Integer i7 = 128;  
+13.	        System.out.println(i6 == i7);//false  
+14.	        Integer i8 = new Integer(127);  
+15.	        System.out.println(i5 == i8); //false  
+16.	        Integer i9 = new Integer(128);  
+17.	        Integer i10 = new Integer(128);  
+18.	        System.out.println(i9 == i10);  //false  
+19.	    } 
+20.}  
+```
+
+简单的说，Integer 缓存池的大小默认为 -128~127，如果字面量的值在-128到127之间，那么不会new新的Integer对象，而是直接引用常量池中的Integer对象。 
+
+new Integer(123) 与 Integer.valueOf(123) 的区别在于，new Integer(123) 每次都会新建一个对象，而 Integer.valueOf(123) 可能会使用缓存对象，因此多次使用 Integer.valueOf(123) 会取得同一个对象的引用。编译器会在自动装箱过程调用 valueOf() 方法，因此多个 Integer 实例使用自动装箱来创建并且值相同，那么就会引用相同的对象。valueOf() 方法的实现比较简单，就是先判断值是否在缓存池中，如果在的话就直接使用缓存池的内容。
+
+Java 还将一些其它基本类型的值放在缓冲池中，包含以下这些：
+
+ - boolean values true and false
+ - all byte values
+ - short values between -128 and 127
+ - int values between -128 and 127
+ - char in the range \u0000 to \u007F
+
+因此在使用这些基本类型对应的包装类型时，就可以直接使用缓冲池中的对象。
+
+总结如下：
+
+  ①无论如何，Integer与new Integer不会相等。不会经历拆箱过程，i3的引用指向堆，而i4指向专门存放他的内存（常量池），他们的内存地址不一样，所以为false
+  ②两个都是非new出来的Integer，如果数在-128到127之间，则是true,否则为false
+  java在编译Integer i2 = 128的时候,被翻译成-> Integer i2 = Integer.valueOf(128);而valueOf()函数会对-128到127之间的数进行缓存
+  ③两个都是new出来的,都为false
+  ④int和integer(无论new否)比，都为true，因为会把Integer自动拆箱为int再去比
