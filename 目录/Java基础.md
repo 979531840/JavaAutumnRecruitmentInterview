@@ -62,7 +62,7 @@ Java 为每个原始类型提供了包装类型：
 17.	        Integer i10 = new Integer(128);  
 18.	        System.out.println(i9 == i10);  //false  
 19.	    } 
-20.}  
+20.   }  
 ```
 
 简单的说，Integer 缓存池的大小默认为 -128~127，如果字面量的值在-128到127之间，那么不会new新的Integer对象，而是直接引用常量池中的Integer对象。 
